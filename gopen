@@ -1,0 +1,26 @@
+#!/bin/bash
+
+git branch >/dev/null 2>&1 || { echo "Not in a git repo"; exit 10; }
+
+branch=$( git branch 2>/dev/null | awk '/^\* / {print $2}' )
+
+remote=$(git config --get branch.${branch}.remote)
+
+url=$(git config --get remote.${remote}.url)
+
+if [[ $url =~ ^http ]]
+then
+    url=$( echo "${url}" | sed -e 's/.git$//' )
+elif [[ $url =~ ^git: ]]
+then
+    url=$( echo "${url}" | sed -e 's/git:/https:/' -e 's/.git$//' )
+else
+    url=$( echo "${url}" | sed -e 's/:/\//' -e 's/^git@/http:\/\//' -e 's/.git$//' )
+fi
+
+if [ $1 ]
+then
+    url="${url}/blob/${branch}/$1"
+fi
+
+open "${url}"
