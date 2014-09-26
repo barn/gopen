@@ -18,9 +18,13 @@ else
     url=$( echo "${url}" | sed -e 's/:/\//' -e 's/^git@/http:\/\//' -e 's/.git$//' )
 fi
 
+# In case you're not in the root, use the relative path to the file.
+rootdir="$(git rev-parse --show-toplevel)"
+current_path="$( echo "${PWD}" | sed -e "s%${rootdir}%%" )"
+
 if [ $1 ]
 then
-    url="${url}/blob/${branch}/$1"
+    url="${url}/blob/${branch}${current_path}/$1"
 fi
 
 open "${url}"
