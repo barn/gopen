@@ -6,6 +6,11 @@ branch=$( git branch 2>/dev/null | awk '/^\* / {print $2}' )
 
 remote=$(git config --get branch.${branch}.remote)
 
+if [ -z $remote ]
+then
+    remote=$(git config --get branch.master.remote)
+fi
+
 url=$(git config --get remote.${remote}.url)
 
 if [[ $url =~ ^http ]]
